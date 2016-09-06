@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5bb997adb5409c8280b19903efee3802",
-    "content-hash": "5cb0b09f101684f407c4704ca0945cf1",
+    "hash": "d844f021457032915f8d04b726cc7941",
+    "content-hash": "f3fa7bb0b4e38591fbb639d4666abe8a",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -1520,6 +1520,32 @@
             "time": "2012-12-21 11:40:51"
         },
         {
+            "name": "subvert/subvert-framework",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "packages/subvert",
+                "reference": "0f56f8a16939bea15e0bbc4d58791d26199fe6c1",
+                "shasum": null
+            },
+            "require": {
+                "laravel/lumen-framework": "5.2.*",
+                "php": ">=5.5.9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Subvert\\Framework\\": "src/"
+                }
+            },
+            "authors": [
+                {
+                    "name": "chenchun",
+                    "email": "chenchun0629@gmail.com"
+                }
+            ]
+        },
+        {
             "name": "symfony/console",
             "version": "v3.0.9",
             "source": {
@@ -2214,7 +2240,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "subvert/subvert-framework": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

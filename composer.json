@@ -9,7 +9,7 @@
     "repositories": [
         {
             "type": "path", 
-            "url": "packages/laravel-generator"
+            "url": "packages/subvert"
         }
     ],
     "require": {
@@ -17,5 +17,15 @@
         "laravel/lumen-framework": "5.2.*",
         "vlucas/phpdotenv": "~2.2",
         "subvert/subvert-framework": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Base\\" : "app/Base/",
+            "Bll\\"  : "app/Bll/",
+            "Com\\"  : "app/Com/",
+            "Logic\\": "app/Logic/",
+            "Sass\\" : "app/Sass/",
+            "Store\\": "store/"
+        }
     }
 }
