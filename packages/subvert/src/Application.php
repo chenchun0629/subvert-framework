@@ -86,7 +86,7 @@ class Application extends Container
 
         $this->basePath = $basePath;
         $this->appName  = $appName;
-
+        
         $this->bootstrapContainer();
         $this->registerErrorHandling();
     }
@@ -597,7 +597,7 @@ class Application extends Container
     public function getConfigurationPath($name = null)
     {
         if (! $name) {
-            $appConfigDir = $this->basePath('config').'/';
+            $appConfigDir = $this->basePath('config').'/'.app()->environment().'/';
 
             if (file_exists($appConfigDir)) {
                 return $appConfigDir;
@@ -605,11 +605,13 @@ class Application extends Container
                 return $path;
             }
         } else {
-            $appConfigPath = $this->basePath('config').'/'.$name.'.php';
+            $appConfigPath = $this->basePath('config').'/'.app()->environment().'/'.$name.'.php';
 
             if (file_exists($appConfigPath)) {
                 return $appConfigPath;
-            } elseif (file_exists($path = __DIR__.'/../config/'.$name.'.php')) {
+            } elseif (file_exists($path = __DIR__.'/../config/'.app()->environment().'/'.$name.'.php')) {
+                return $path;
+            } elseif(file_exists($path = $this->basePath('config').'/share/'.$name.'.php')) {
                 return $path;
             }
         }
@@ -637,6 +639,7 @@ class Application extends Container
             class_alias('Illuminate\Support\Facades\Schema', 'Schema');
             class_alias('Illuminate\Support\Facades\URL', 'URL');
             class_alias('Illuminate\Support\Facades\Validator', 'Validator');
+            class_alias('Subvert\Framework\Foundation\Invoker\Invoker', 'Invoker');
         }
     }
 

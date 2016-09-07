@@ -2,6 +2,6 @@
 
 return [
 
-    ['api' => 'test.network.ping.pong', 'version' => '*', 'uses' => 'Bll.Test.Network.Ping.pong', 'status' => 'enable'],
+    ['api' => 'test.network.ping.pong', 'version' => '*', 'action' => 'Bll.Test.Network.Ping.pong', 'status' => 'enable'],
 
 ];

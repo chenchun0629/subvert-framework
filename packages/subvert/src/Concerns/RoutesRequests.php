@@ -2,10 +2,11 @@
 
 namespace Subvert\Framework\Concerns;
 
-
+use Invoker;
 use Closure;
 use Exception;
 use Throwable;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Laravel\Lumen\Routing\Pipeline;
@@ -38,7 +39,13 @@ trait RoutesRequests
     protected $routeGroups = [];
 
     
-    protected $filter = [];
+    /**
+     * All of the global middleware for the application.
+     *
+     * @var array
+     */
+    protected $middleware = [];
+
 
     /**
      * The FastRoute dispatcher.
@@ -50,7 +57,22 @@ trait RoutesRequests
 
     public function routeGroups(array $groups)
     {
-         $this->routeGroups = $groups;
+         if (! is_array($groups)) {
+             $groups = [$groups];
+         }
+
+         $this->routeGroups = array_unique(array_merge($this->routeGroups, $groups));
+
+         return $this;
+    }
+
+    public function getRouteGroups($client = null)
+    {
+        if (empty($client)) {
+            return $this->routeGroups;
+        }
+
+        return $this->routeGroups[$client];
     }
 
     /**
@@ -65,9 +87,31 @@ trait RoutesRequests
     {
         if (!isset($this->routes[$api])) $this->routes[$api] = [];
         $this->routes[$api][$version] = [
-            'uses'   => $action,
+            'action'   => $action,
             'status' => $status,
         ];
+    }
+
+    public function dispatchRoute($api, $version)
+    {
+        if (!isset($this->routes[$api])) {
+            throw new MethodNotAllowedHttpException($api . $version);
+            
+        }
+
+        if (isset($this->routes[$api][$version])) {
+            if ($this->routes[$api][$version]['status']) {
+                return $this->routes[$api][$version]['action'];
+            }
+        }
+
+        if (isset($this->routes[$api]['*'])) {
+            if ($this->routes[$api]['*']['status']) {
+                return $this->routes[$api]['*']['action'];
+            }
+        }
+
+        throw new MethodNotAllowedHttpException($api . $version);
     }
 
     /**
@@ -76,11 +120,14 @@ trait RoutesRequests
      * @param  SymfonyRequest  $request
      * @return void
      */
-    public function run($request)
+    public function run($request = null)
     {
-        $this->doFilter($request);
+
+        $request = empty($request) ? app('request') : $request;
 
         $response = $this->dispatch($request);
+
+        $response = $this->prepareResponse($response);
 
         if ($response instanceof SymfonyResponse) {
             $response->send();
@@ -97,22 +144,69 @@ trait RoutesRequests
      */
     public function dispatch($request)
     {
+
+        try {
+            return $this->sendThroughPipeline($this->middleware, function () use($request) {
+                list($api, $version, $data) = $this->parseIncomingRequest($request);
+                $action = $this->dispatchRoute($api, $version);
+                return $this->invoke($action, $data);
+            });
+        } catch (Exception $e) {
+            return $this->sendExceptionToHandler($e);
+        } catch (Throwable $e) {
+            return $this->sendExceptionToHandler($e);
+        }
         
     }
 
-    public function addFilter($filter)
+    public function parseIncomingRequest($request)
     {
-        if (!is_array($filter)) $filter = [$filter];
+        return [
+            Arr::get($request->all(), 'call.api'),
+            Arr::get($request->all(), 'call.api_version'),
+            Arr::get($request->all(), 'call.data'),
+        ];
+    }
 
-        $this->filter = array_unique(array_merge($this->filter, $filter));
+    public function invoke($action, $data)
+    {
+        return Invoker::execute($action, $data);
+    }
+
+
+
+    /**
+     * Add new middleware to the application.
+     *
+     * @param  Closure|array  $middleware
+     * @return $this
+     */
+    public function middleware($middleware)
+    {
+        if (! is_array($middleware)) {
+            $middleware = [$middleware];
+        }
+
+        $this->middleware = array_unique(array_merge($this->middleware, $middleware));
 
         return $this;
     }
 
-    public function doFilter($request)
+    protected function sendThroughPipeline(array $middleware, Closure $then)
     {
+        $shouldSkipMiddleware = $this->bound('middleware.disable') &&
+                                        $this->make('middleware.disable') === true;
 
+        if (count($middleware) > 0 && ! $shouldSkipMiddleware) {
+            return (new Pipeline($this))
+                ->send($this->make('request'))
+                ->through($middleware)
+                ->then($then);
+        }
+
+        return $then();
     }
+
 
     /**
      * Set the FastRoute dispatcher instance.

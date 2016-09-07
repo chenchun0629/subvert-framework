@@ -29,13 +29,28 @@ $app->withFacades();
 //     App\Exceptions\Handler::class
 // );
 
+$app->singleton('Com\Bootstrap\Validation\SignValidation', function () {
+    $body = app('request')->get('body');
+    $client = $body['client'];
+    $class = 'Com\\Bootstrap\\Validation\\' . studly_case($client) .'SignValidation';
+    return app()->make($class);
+});
+
+
+$app->middleware([
+        Com\Bootstrap\Middleware\RuidMiddleware::class,                     # 生成请求唯一ID
+        Com\Bootstrap\Middleware\ParameterValidationMiddleware::class,      # 参数验证
+        Com\Bootstrap\Middleware\ClientValidationMiddleware::class,         # 客户端来源你验证
+        Com\Bootstrap\Middleware\SignValidationMiddleware::class,           # 签名验证
+        Com\Bootstrap\Middleware\LoadRoutesMiddleware::class,               # 延迟加载路由
+    ]);
 
 
 /**
  * load routes groups
  */
 $app->routeGroups([
-        'test' => 'routes/test.php',
+        'test' => 'routes/test',
     ]);
 
 
