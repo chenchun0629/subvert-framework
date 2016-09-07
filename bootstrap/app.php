@@ -24,15 +24,13 @@ $app = new Subvert\Framework\Application(
 
 $app->withFacades();
 
-// $app->singleton(
-//     Illuminate\Contracts\Debug\ExceptionHandler::class,
-//     App\Exceptions\Handler::class
-// );
+$app->singleton(
+    Illuminate\Contracts\Debug\ExceptionHandler::class,
+    Subvert\Framework\Utils\ExceptionHandler::class
+);
 
 $app->singleton('Com\Bootstrap\Validation\SignValidation', function () {
-    $body = app('request')->get('body');
-    $client = $body['client'];
-    $class = 'Com\\Bootstrap\\Validation\\' . studly_case($client) .'SignValidation';
+    $class = 'Com\\Bootstrap\\Validation\\' . studly_case(app('request_client')) .'SignValidation';
     return app()->make($class);
 });
 
