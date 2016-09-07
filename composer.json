@@ -28,5 +28,10 @@
             "Sass\\" : "app/Sass/",
             "Store\\": "store/"
         }
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "php -r \"copy('.env.example', '.env');\""
+        ]
     }
 }
