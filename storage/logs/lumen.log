@@ -1,9 +1,0 @@
-[2016-09-07 17:29:06] lumen.ERROR: Symfony\Component\Debug\Exception\FatalThrowableError: Type error: Argument 1 passed to Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException::__construct() must be of the type array, string given, called in /data/development/subvert/vendor/subvert/subvert-framework/src/Concerns/RoutesRequests.php on line 98 in /data/development/subvert/vendor/symfony/http-kernel/Exception/MethodNotAllowedHttpException.php:29
-Stack trace:
-#0 /data/development/subvert/vendor/subvert/subvert-framework/src/Concerns/RoutesRequests.php(98): Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException->__construct('test.network.pi...')
-#1 /data/development/subvert/vendor/subvert/subvert-framework/src/Concerns/RoutesRequests.php(151): Subvert\Framework\Application->dispatchRoute('test.network.pi...', '0.0.1')
-#2 /data/development/subvert/vendor/subvert/subvert-framework/src/Concerns/RoutesRequests.php(207): Subvert\Framework\Application->Subvert\Framework\Concerns\{closure}()
-#3 /data/development/subvert/vendor/subvert/subvert-framework/src/Concerns/RoutesRequests.php(153): Subvert\Framework\Application->sendThroughPipeline(Array, Object(Closure))
-#4 /data/development/subvert/vendor/subvert/subvert-framework/src/Concerns/RoutesRequests.php(128): Subvert\Framework\Application->dispatch(Object(Illuminate\Http\Request))
-#5 /data/development/subvert/public/index.php(7): Subvert\Framework\Application->run(Object(Illuminate\Http\Request))
-#6 {main}  
