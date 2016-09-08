@@ -1,6 +1,6 @@
 <?php
 
-namespace Subvert\Framework\Foundation\Struct;
+namespace Subvert\Framework\Foundation\Response;
 
 use ArrayAccess;
 use JsonSerializable;
@@ -11,14 +11,14 @@ use Subvert\Framework\Traits\JsonableTrait;
 use Subvert\Framework\Traits\ArrayAccessTrait;
 use Subvert\Framework\Traits\JsonSerializableTrait;
 
-class ResponseStruct implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
+class ResponseData implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 {
 
     use ArrayAccessTrait, JsonableTrait, JsonSerializableTrait;
 
-    const FLAG_SUCCESS = 0;
-    const FLAG_NOTICE  = 1;
-    const FLAG_FAIL    = 2;
+    const FLAG_SUCCESS = 'success';
+    const FLAG_NOTICE  = 'notice';
+    const FLAG_FAIL    = 'fail';
 
     protected $code;
 
@@ -36,6 +36,11 @@ class ResponseStruct implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         $this->response = isset($message['response']) ? $message['response'] : $response;
     }
 
+    public static function set(array $message, $response = [])
+    {
+        return new static($message, $response);
+    }
+
     public function toArray()
     {
         return [
@@ -45,10 +50,10 @@ class ResponseStruct implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             'flag'     => $this->flag,
         ];
     }
-
-    public static function set(array $message, $response = [])
+    
+    public function __toString()
     {
-        return new static($message, $response);
+        return $this->toJson();
     }
 
 }

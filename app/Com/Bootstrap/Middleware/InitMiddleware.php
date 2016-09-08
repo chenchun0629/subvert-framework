@@ -6,7 +6,7 @@ use Closure;
 use Rhumsaa\Uuid\Uuid;
 use Subvert\Framework\Contract\RequestMiddleware;
 
-class RuidMiddleware implements RequestMiddleware
+class InitMiddleware implements RequestMiddleware
 {
 
     public function handle($request, Closure $next)
@@ -14,7 +14,7 @@ class RuidMiddleware implements RequestMiddleware
         /**
          * request unique id
          */
-        app()->instance('ruid', Uuid::uuid1()->toString());
+        app()->instance('request_uuid', Uuid::uuid1()->toString());
 
         $requestData = $request->all();
 
@@ -22,6 +22,15 @@ class RuidMiddleware implements RequestMiddleware
          * 请求来源
          */
         app()->instance('request_client', $requestData['body']['client']);
+
+        /**
+         * 请求session_id
+         */
+        app()->instance('request_token', $requestData['body']['token']);
+
+
+
+        app()->instance('request_datetime', date('Y-m-d H:i:s'));
         
         return $next($request);
         

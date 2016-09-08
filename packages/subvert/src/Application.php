@@ -7,8 +7,10 @@ use RuntimeException;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Composer;
+use Monolog\Handler\SyslogHandler;
 use Monolog\Handler\StreamHandler;
 use Illuminate\Container\Container;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
@@ -379,7 +381,7 @@ class Application extends Container
             if ($this->monologConfigurator) {
                 return call_user_func($this->monologConfigurator, new Logger('lumen'));
             } else {
-                return new Logger('lumen', [$this->getMonologHandler()]);
+                return new Logger('lumen', [$this->getMonologHandler()], [$this->getMonologProcessor()]);
             }
         });
     }
@@ -419,9 +421,40 @@ class Application extends Container
      */
     protected function getMonologHandler()
     {
-        return (new StreamHandler(storage_path('logs/lumen.log'), Logger::DEBUG))
-                            ->setFormatter(new LineFormatter(null, null, true, true));
+        $date = date('Y-m-d');
+        return (new StreamHandler(storage_path(env('APP_LOG_PATH', 'logs/'.app()->make('request_client').'-'.$date.'.log')), Logger::DEBUG))
+            ->setFormatter(new JsonFormatter());
+
+        // return (new SyslogHandler('MOBILE'))->setFormatter(new JsonFormatter());
     }
+
+    protected function getMonologProcessor() 
+    {
+        return function(array $record) {
+            /**
+             * ruid = request unique id
+             */
+            $record['extra']['request_uuid'] = app()->make('request_uuid');
+
+            /**
+             * 请求来自于
+             */
+            $record['extra']['request_client'] = app()->make('request_client');
+
+            /**
+             * 请求者ip
+             */
+            $record['extra']['request_client_ip'] = app('request')->getClientIp();
+
+            /**
+             * 请求时间
+             */
+            $record['extra']['request_datetime'] = app()->make('request_datetime');
+
+            return $record;
+        };
+    }
+
 
     /**
      * Register container bindings for the application.
@@ -640,6 +673,7 @@ class Application extends Container
             class_alias('Illuminate\Support\Facades\URL', 'URL');
             class_alias('Illuminate\Support\Facades\Validator', 'Validator');
             class_alias('Subvert\Framework\Foundation\Invoker\Invoker', 'Invoker');
+            class_alias('Subvert\Framework\Foundation\Database\SQLBuilder', 'SQLBuilder');
         }
     }
 

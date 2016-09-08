@@ -47,12 +47,6 @@ trait RoutesRequests
     protected $middleware = [];
 
 
-    /**
-     * The FastRoute dispatcher.
-     *
-     * @var \FastRoute\Dispatcher
-     */
-    protected $dispatcher;
 
 
     public function routeGroups(array $groups)
@@ -94,6 +88,11 @@ trait RoutesRequests
 
     public function dispatchRoute($api, $version)
     {
+
+        if ($this->bound('dispatched_route')) {
+            return $this->make('dispatched_route');
+        }
+
         if (!isset($this->routes[$api])) {
             throw new MethodNotAllowedHttpException($api . $version);
             
@@ -101,13 +100,13 @@ trait RoutesRequests
 
         if (isset($this->routes[$api][$version])) {
             if ($this->routes[$api][$version]['status']) {
-                return $this->routes[$api][$version]['action'];
+                return $this->routes[$api][$version];
             }
         }
 
         if (isset($this->routes[$api]['*'])) {
             if ($this->routes[$api]['*']['status']) {
-                return $this->routes[$api]['*']['action'];
+                return $this->routes[$api]['*'];
             }
         }
 
@@ -148,8 +147,8 @@ trait RoutesRequests
         try {
             return $this->sendThroughPipeline($this->middleware, function () use($request) {
                 list($api, $version, $data) = $this->parseIncomingRequest($request);
-                $action = $this->dispatchRoute($api, $version);
-                return $this->invoke($action, $data);
+                $route = $this->dispatchRoute($api, $version);
+                return $this->invoke($route['action'], $data);
             });
         } catch (Exception $e) {
             return $this->sendExceptionToHandler($e);
@@ -207,17 +206,6 @@ trait RoutesRequests
         return $then();
     }
 
-
-    /**
-     * Set the FastRoute dispatcher instance.
-     *
-     * @param  \FastRoute\Dispatcher  $dispatcher
-     * @return void
-     */
-    public function setDispatcher(Dispatcher $dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-    }
 
 
     /**

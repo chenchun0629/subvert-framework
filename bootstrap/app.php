@@ -24,9 +24,17 @@ $app = new Subvert\Framework\Application(
 
 $app->withFacades();
 
+/**
+ * load config
+ */
+
+
+/**
+ * bind object
+ */
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
-    Subvert\Framework\Utils\ExceptionHandler::class
+    Subvert\Framework\Foundation\Exception\ExceptionHandler::class
 );
 
 $app->singleton('Com\Bootstrap\Validation\SignValidation', function () {
@@ -35,13 +43,25 @@ $app->singleton('Com\Bootstrap\Validation\SignValidation', function () {
 });
 
 
+
+
+/**
+ * set middleware
+ */
 $app->middleware([
-        Com\Bootstrap\Middleware\RuidMiddleware::class,                     # 生成请求唯一ID
+        Com\Bootstrap\Middleware\InitMiddleware::class,                     # 生成请求唯一ID
         Com\Bootstrap\Middleware\ParameterValidationMiddleware::class,      # 参数验证
         Com\Bootstrap\Middleware\ClientValidationMiddleware::class,         # 客户端来源你验证
         Com\Bootstrap\Middleware\SignValidationMiddleware::class,           # 签名验证
         Com\Bootstrap\Middleware\LoadRoutesMiddleware::class,               # 延迟加载路由
+        // Com\Bootstrap\Middleware\SessionStartMiddleware::class,             # session处理
+        // Com\Bootstrap\Middleware\DispatchRouteMiddleware::class,            # 解析路由
     ]);
+
+/**
+ * register service
+ */
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
 
 
 /**
