@@ -23,7 +23,7 @@ class LoadRoutesMiddleware implements RequestMiddleware
         app()->instance('routes', $routes);
 
         foreach ($routes as $route) {
-            app()->addRoute($route['api'], $route['version'], $route['action'], $route['status']);
+            app()->addRoute($route);
         }
 
         return $next($request);

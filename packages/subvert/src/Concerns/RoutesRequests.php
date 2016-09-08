@@ -77,12 +77,29 @@ trait RoutesRequests
      * @param  mixed  $action
      * @return void
      */
-    public function addRoute($api, $version, $action, $status)
+    public function addRoute($route)
     {
+        list($api, $action, $version, $status) = $this->parseRoute($route);
+        
         if (!isset($this->routes[$api])) $this->routes[$api] = [];
         $this->routes[$api][$version] = [
-            'action'   => $action,
+            'action' => $action,
             'status' => $status,
+        ];
+    }
+
+    public function parseRoute($route)
+    {
+        $api     = $route['api'];
+        $action  = $route['action'];
+        $version = isset($route['version']) ? $route['version'] : '*'; 
+        $status  = isset($route['status']) ? $route['status'] : 'enable';
+
+        return [
+            $api,
+            $action,
+            $version,
+            $status,
         ];
     }
 
