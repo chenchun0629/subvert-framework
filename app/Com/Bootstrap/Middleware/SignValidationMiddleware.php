@@ -3,6 +3,8 @@
 namespace Com\Bootstrap\Middleware;
 
 use Closure;
+use ResponseData;
+use Store\Code\System\SystemCode;
 use Subvert\Framework\Contract\Validatable;
 use Subvert\Framework\Contract\RequestMiddleware;
 
@@ -15,7 +17,13 @@ class SignValidationMiddleware implements RequestMiddleware, Validatable
         $valid = $this->validate($request->all());
 
         if (!$valid['result']) {
-            return $valid;
+            app('log')->error('system.sign.validation', [$valid]);
+
+            if (env('APP_DEBUG')) {
+                return ResponseData::set(SystemCode::SYSTEM_SIGN_ERROR, $valid);
+            }
+
+            return ResponseData::set(SystemCode::SYSTEM_SIGN_ERROR, false);
         }
         
         return $next($request);

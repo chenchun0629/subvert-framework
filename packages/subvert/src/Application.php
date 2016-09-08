@@ -379,9 +379,9 @@ class Application extends Container
     {
         $this->singleton('Psr\Log\LoggerInterface', function () {
             if ($this->monologConfigurator) {
-                return call_user_func($this->monologConfigurator, new Logger('lumen'));
+                return call_user_func($this->monologConfigurator, new Logger($this->appName));
             } else {
-                return new Logger('lumen', [$this->getMonologHandler()], [$this->getMonologProcessor()]);
+                return new Logger($this->appName, [$this->getMonologHandler()], [$this->getMonologProcessor()]);
             }
         });
     }
@@ -674,6 +674,7 @@ class Application extends Container
             class_alias('Illuminate\Support\Facades\Validator', 'Validator');
             class_alias('Subvert\Framework\Foundation\Invoker\Invoker', 'Invoker');
             class_alias('Subvert\Framework\Foundation\Database\SQLBuilder', 'SQLBuilder');
+            class_alias('Subvert\Framework\Foundation\Response\ResponseData', 'ResponseData');
         }
     }
 

@@ -28,10 +28,12 @@ class InitMiddleware implements RequestMiddleware
          */
         app()->instance('request_token', $requestData['body']['token']);
 
-
-
+        /**
+         * 请求时间
+         */
         app()->instance('request_datetime', date('Y-m-d H:i:s'));
         
+
         return $next($request);
         
     }

@@ -4,6 +4,8 @@ namespace Com\Bootstrap\Middleware;
 
 use Closure;
 use Validator;
+use ResponseData;
+use Store\Code\System\SystemCode;
 use Subvert\Framework\Contract\RequestMiddleware;
 
 class ParameterValidationMiddleware implements RequestMiddleware
@@ -28,7 +30,10 @@ class ParameterValidationMiddleware implements RequestMiddleware
                 ]);
 
         if ($validator->fails()) {
-            return $validator->errors();
+
+            app('log')->error('system.parameter.validation', [$validator->errors()]);
+
+            return ResponseData::set(SystemCode::SYSTEM_PARAMETER_ERROR, false);
         }
 
         return $next($request);

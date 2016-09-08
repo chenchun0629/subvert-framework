@@ -36,9 +36,12 @@ class ResponseData implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
         $this->response = isset($message['response']) ? $message['response'] : $response;
     }
 
-    public static function set(array $message, $response = [])
+    public static function set($message, $response = [])
     {
-        return new static($message, $response);
+        if ($message instanceof ResponseData) {
+            return $message;
+        }
+        return new static((array)$message, $response);
     }
 
     public function toArray()
