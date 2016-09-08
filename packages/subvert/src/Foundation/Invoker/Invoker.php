@@ -2,6 +2,7 @@
 
 namespace Subvert\Framework\Foundation\Invoker;
 
+use DB;
 use Event;
 use Subvert\Framework\Contract\Invokable;
 
@@ -22,9 +23,19 @@ class Invoker implements Invokable
 
         $result = null;
         $except = null;
+        $sql = [];
 
         Event::fire('invoke.before', [$action, $data]);
         $start = microtime(true);
+
+        DB::listen(function($obj) use (&$sql){
+            $sql[] = [
+                'sql'      => $obj->sql, 
+                'bindings' => $obj->bindings, 
+                'use'      => $obj->time/1000
+            ];
+        });
+
 
         try {
             $data = static::formatData($data);
@@ -57,6 +68,7 @@ class Invoker implements Invokable
                 'data'      => $data,
                 'result'    => $result,
                 'use'       => $use,
+                'sql'       => $sql,
                 'exception' => $except,
             ];
 
@@ -80,6 +92,7 @@ class Invoker implements Invokable
                 'data'      => $data,
                 'result'    => $result,
                 'use'       => $use,
+                'sql'       => $sql,
                 'exception' => $except,
             ];
 
@@ -99,6 +112,7 @@ class Invoker implements Invokable
             'data'      => $data,
             'result'    => $result,
             'use'       => $use,
+            'sql'       => $sql,
             'exception' => $except,
         ];
 

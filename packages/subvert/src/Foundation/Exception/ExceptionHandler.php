@@ -7,7 +7,7 @@ use Illuminate\Http\Response as LumenResponse;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 
 use Subvert\Framework\Foundation\Response\ResponseData;
-use Subvert\Framework\Foundation\Response\FrameworkResponse;
+use Subvert\Framework\Foundation\Response\FrameworkCode;
 
 class ExceptionHandler extends ExceptionHandler
 {
@@ -19,6 +19,6 @@ class ExceptionHandler extends ExceptionHandler
     
     public function render($request, Exception $e)
     {
-        return new LumenResponse(ResponseData::set(FrameworkResponse::SYSTEM_EXCEPTION));
+        return new LumenResponse(ResponseData::set(FrameworkCode::SYSTEM_EXCEPTION));
     }
 }
