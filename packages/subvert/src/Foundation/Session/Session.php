@@ -61,6 +61,11 @@ class Session implements Sessionable, ArrayAccess
         return $result;
     }
 
+    public function all()
+    {
+        return $this->redis->hgetall($this->redisKey);
+    }
+
     public function destory()
     {
         $this->redis->del($this->redisKey);

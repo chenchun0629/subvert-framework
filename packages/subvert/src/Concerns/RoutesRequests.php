@@ -176,11 +176,11 @@ trait RoutesRequests
             return $this->sendThroughPipeline($this->middleware, function () use($request) {
                 list($api, $version, $data) = $this->parseIncomingRequest($request);
                 $route = $this->dispatchRoute($api, $version);
-                $result = $this->invoke($route['action'], $data);
-                if ($result instanceof ResponseData) {
-                    return $result;
+                $response = $this->invoke($route['action'], $data);
+                if (!($response instanceof ResponseData)) {
+                    $response = ResponseData::set(FrameworkCode::SYSTEM_SUCCESS ,$response);
                 }
-                return ResponseData::set(FrameworkCode::SYSTEM_SUCCESS ,$result);
+                return $this->prepareResponse($response);
             });
         } catch (Exception $e) {
             return $this->sendExceptionToHandler($e);

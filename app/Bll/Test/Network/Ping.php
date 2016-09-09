@@ -32,9 +32,9 @@ class Ping
         return 'entity';
     }
 
-    public function sess()
+    public function sess($a, $test)
     {
-        return 'session';
+        return ['method' => 'session'];
     }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Com\Test\Network\Ping;
+namespace Com\Entity\Test\Network\Ping;
 
 use Com\Foundation\SessionProcesser;
 
@@ -21,6 +21,7 @@ class Entity extends SessionProcesser
     {
         $this->session['test'] = 'hello world';
         $response['response'] = app('session')->sessionId();
+        return $response;
     }
 
 }
