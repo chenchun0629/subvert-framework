@@ -20,7 +20,7 @@ class ParameterValidationMiddleware implements RequestMiddleware
                     'call.data'          => 'required|string',
                     'call.api_version'   => 'required|string',
                     'body'               => 'required|array',
-                    'body.token'         => 'alpha',
+                    'body.token'         => 'string',
                     'body.sign'          => 'required|string',
                     'body.client'        => 'required|string',
                     'device'             => 'required|array',

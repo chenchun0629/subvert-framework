@@ -43,7 +43,7 @@ class ResponseData implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
         }
         return new static((array)$message, $response);
     }
-
+    
     public function toArray()
     {
         return [

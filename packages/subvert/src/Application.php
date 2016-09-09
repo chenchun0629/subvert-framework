@@ -16,6 +16,7 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 use Zend\Diactoros\Response as PsrResponse;
+use Subvert\Framework\Foundation\Session\Session;
 use Illuminate\Config\Repository as ConfigRepository;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 
@@ -108,6 +109,11 @@ class Application extends Container
         $this->instance('path', $this->path());
 
         $this->registerContainerAliases();
+    }
+
+    public function appName()
+    {
+        return $this->appName;
     }
 
     /**
@@ -210,6 +216,14 @@ class Application extends Container
         }
 
         return parent::make($abstract, $parameters);
+    }
+
+    protected function registerSessionBindings()
+    {
+        $this->singleton('session', function($app, $params) {
+            $sessionId = isset($params['session_id']) ? $params['session_id'] : null;
+            return Session::init($sessionId);
+        });
     }
 
     /**
@@ -879,6 +893,7 @@ class Application extends Container
         'Illuminate\Contracts\Validation\Factory' => 'registerValidatorBindings',
         'view' => 'registerViewBindings',
         'Illuminate\Contracts\View\Factory' => 'registerViewBindings',
+        'session' => 'registerSessionBindings',
     ];
 }
 

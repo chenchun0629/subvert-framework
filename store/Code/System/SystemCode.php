@@ -19,6 +19,7 @@ class SystemCode extends AbstractCode
     const SYSTEM_SIGN_ERROR = ['code' => 1003, 'message' => '签名错误', 'flag' => ResponseData::FLAG_FAIL];
     const SYSTEM_UNDEFINED_ROUTE = ['code' => 1004, 'message' => '未定义路由', 'flag' => ResponseData::FLAG_FAIL];
     const SYSTEM_ROUTE_PATH_ERROR = ['code' => 1005, 'message' => '路由配置未找到', 'flag' => ResponseData::FLAG_FAIL];
+    const SYSTEM_NOT_FOUND_ERROR = ['code' => 1006, 'message' => '非法接口', 'flag' => ResponseData::FLAG_FAIL];
 
 
 

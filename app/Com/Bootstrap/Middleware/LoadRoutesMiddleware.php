@@ -4,6 +4,7 @@ namespace Com\Bootstrap\Middleware;
 
 use Closure;
 use ResponseData;
+use Illuminate\Support\Arr;
 use Store\Code\System\SystemCode;
 use Subvert\Framework\Contract\Validatable;
 use Subvert\Framework\Contract\RequestMiddleware;
@@ -35,6 +36,19 @@ class LoadRoutesMiddleware implements RequestMiddleware
 
         foreach ($routes as $route) {
             app()->addRoute($route);
+        }
+
+        $dispatchedRoute = app()->dispatchRoute(
+            Arr::get($request->all(), 'call.api'),
+            Arr::get($request->all(), 'call.version')
+        );
+
+        if (empty($dispatchedRoute)) {
+
+            app('log')->error('system.route.notfound', [app('request_client'), $request->all()]);
+
+            return ResponseData::set(SystemCode::SYSTEM_NOT_FOUND_ERROR, false);
+
         }
 
         return $next($request);

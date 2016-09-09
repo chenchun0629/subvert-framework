@@ -6,6 +6,7 @@ use Invoker;
 use Closure;
 use Exception;
 use Throwable;
+use ResponseData;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -15,6 +16,7 @@ use Illuminate\Http\Exception\HttpResponseException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Laravel\Lumen\Routing\Controller as LumenController;
+use Subvert\Framework\Foundation\Response\FrameworkCode;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Symfony\Bridge\PsrHttpMessage\Factory\HttpFoundationFactory;
@@ -79,12 +81,13 @@ trait RoutesRequests
      */
     public function addRoute($route)
     {
-        list($api, $action, $version, $status) = $this->parseRoute($route);
+        list($api, $action, $version, $status, $entity) = $this->parseRoute($route);
         
         if (!isset($this->routes[$api])) $this->routes[$api] = [];
         $this->routes[$api][$version] = [
             'action' => $action,
             'status' => $status,
+            'entity' => $entity,
         ];
     }
 
@@ -94,12 +97,14 @@ trait RoutesRequests
         $action  = $route['action'];
         $version = isset($route['version']) ? $route['version'] : '*'; 
         $status  = isset($route['status']) ? $route['status'] : 'enable';
+        $entity  = isset($route['entity']) ? $route['entity'] : '';
 
         return [
             $api,
             $action,
             $version,
             $status,
+            $entity,
         ];
     }
 
@@ -117,12 +122,18 @@ trait RoutesRequests
 
         if (isset($this->routes[$api][$version])) {
             if ($this->routes[$api][$version]['status']) {
+
+                $this->instance('dispatched_route', $this->routes[$api][$version]);
+
                 return $this->routes[$api][$version];
             }
         }
 
         if (isset($this->routes[$api]['*'])) {
             if ($this->routes[$api]['*']['status']) {
+
+                $this->instance('dispatched_route', $this->routes[$api]['*']);
+
                 return $this->routes[$api]['*'];
             }
         }
@@ -165,7 +176,11 @@ trait RoutesRequests
             return $this->sendThroughPipeline($this->middleware, function () use($request) {
                 list($api, $version, $data) = $this->parseIncomingRequest($request);
                 $route = $this->dispatchRoute($api, $version);
-                return $this->invoke($route['action'], $data);
+                $result = $this->invoke($route['action'], $data);
+                if ($result instanceof ResponseData) {
+                    return $result;
+                }
+                return ResponseData::set(FrameworkCode::SYSTEM_SUCCESS ,$result);
             });
         } catch (Exception $e) {
             return $this->sendExceptionToHandler($e);
@@ -188,8 +203,6 @@ trait RoutesRequests
     {
         return Invoker::execute($action, $data);
     }
-
-
 
     /**
      * Add new middleware to the application.

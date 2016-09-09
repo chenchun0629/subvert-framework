@@ -27,7 +27,8 @@ $app->withFacades();
 /**
  * load config
  */
-// $app->config('database');
+$app->configure('database');
+$app->configure('session');
 
 /**
  * bind object
@@ -42,6 +43,7 @@ $app->singleton('Com\Bootstrap\Validation\SignValidation', function () {
     return app()->make($class);
 });
 
+
 /**
  * set middleware
  */
@@ -52,7 +54,7 @@ $app->middleware([
         Com\Bootstrap\Middleware\ClientValidationMiddleware::class,         # 客户端来源你验证
         Com\Bootstrap\Middleware\SignValidationMiddleware::class,           # 签名验证
         Com\Bootstrap\Middleware\LoadRoutesMiddleware::class,               # 延迟加载路由
-        // Com\Bootstrap\Middleware\SessionStartMiddleware::class,             # session处理
+        Com\Bootstrap\Middleware\SessionStartMiddleware::class,             # session处理
         // Com\Bootstrap\Middleware\DispatchRouteMiddleware::class,            # 解析路由
     ]);
 
