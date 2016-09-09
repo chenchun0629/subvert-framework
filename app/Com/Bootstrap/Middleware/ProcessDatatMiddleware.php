@@ -36,8 +36,15 @@ class ProcessDatatMiddleware implements RequestMiddleware
         $response = $next($request);
 
         $responseData = $response->getOriginalContent();
+        
         if ($entity && $responseData['code'] === 0) {
-            $responseData['response'] = $entity->output($responseData['response']);
+            try {
+                $responseData['response'] = $entity->output($responseData['response']);
+            } catch(\Exception $ex) {
+                app('log')->error('system.data.process', [$ex]);
+
+                return app()->prepareResponse($ex->getMessage());
+            }
             $response->setContent($responseData);
         }
 
