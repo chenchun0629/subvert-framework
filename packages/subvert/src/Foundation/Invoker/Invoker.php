@@ -27,14 +27,13 @@ class Invoker implements Invokable
         // echo "=============", static::$count, "=============\n";
         $result = null;
         $except = null;
-        $sql = static::$sql;
-        static::$sql = [];
+        $sql = [];
 
         Event::fire('invoke.before', [$action, $data]);
         $start = microtime(true);
 
-        DB::listen(function($obj) {
-            static::$sql[] = [
+        DB::listen(function($obj) use(&$sql) {
+            $sql[] = [
                 'sql'      => $obj->sql, 
                 'bindings' => $obj->bindings, 
                 'use'      => $obj->time/1000
@@ -121,15 +120,13 @@ class Invoker implements Invokable
             'data'      => $data,
             'result'    => $result,
             'use'       => $use,
-            'sql'       => static::$sql,
+            'sql'       => $sql,
             'exception' => $except,
             'children'  => $childStack
         ];
 
         $parentCallStack[] = static::$callStack;
         static::$callStack = $parentCallStack;
-
-        static::$sql = $sql;
 
         // echo "=============", static::$count, "=============\n";
         static::$count--;
