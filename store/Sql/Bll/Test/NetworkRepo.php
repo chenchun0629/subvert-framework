@@ -17,4 +17,9 @@ class NetworkRepo
         'require' => ['id'],
     ];
 
+    const TEST_SQL_3 = [
+        'sql' => 'SELECT * FROM `test` WHERE #{WHERE}# #{LIMIT}#',
+        'require' => ['id'],
+    ];
+
 }

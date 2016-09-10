@@ -8,28 +8,33 @@ use Subvert\Framework\Contract\Invokable;
 
 class Invoker implements Invokable
 {
-    const CALL_TYPE_NONE      = -1;
-    const CALL_TYPE_DOT       = 1;           // a.b.c.d.e
-    const CALL_TYPE_NAMESPACE = 2;           // a/b/c/d@e
-    const CALL_TYPE_CALLABLE  = 3;           // function() {}
+    const CALL_TYPE_NONE        = -1;
+    const CALL_TYPE_DOT         = 1;           // a.b.c.d.e
+    const CALL_TYPE_NAMESPACE   = 2;           // a/b/c/d@e
+    const CALL_TYPE_CALLABLE    = 3;           // function() {}
 
-    static $callStack    = [];
+    static $callStack   = [];
+    static $sql         = [];
+    static $count       = 0;
 
     public static function execute($action, $data)
     {
+        static::$count++;
 
         $parentCallStack = static::$callStack;
         static::$callStack = [];
 
+        // echo "=============", static::$count, "=============\n";
         $result = null;
         $except = null;
-        $sql = [];
+        $sql = static::$sql;
+        static::$sql = [];
 
         Event::fire('invoke.before', [$action, $data]);
         $start = microtime(true);
 
-        DB::listen(function($obj) use (&$sql){
-            $sql[] = [
+        DB::listen(function($obj) {
+            static::$sql[] = [
                 'sql'      => $obj->sql, 
                 'bindings' => $obj->bindings, 
                 'use'      => $obj->time/1000
@@ -75,9 +80,9 @@ class Invoker implements Invokable
             $parentCallStack['children'][] = static::$callStack;
             static::$callStack = $parentCallStack;
 
-            throw $ex;
-            
+            static::$count--;
 
+            throw $ex;
         } catch(\Throwable $ex) {
 
             $end = microtime(true);
@@ -99,6 +104,8 @@ class Invoker implements Invokable
             $parentCallStack['children'][] = static::$callStack;
             static::$callStack = $parentCallStack;
 
+            static::$count--;
+
             throw $ex;
         }
 
@@ -107,17 +114,25 @@ class Invoker implements Invokable
 
         Event::fire('invoke.after', [$action, $data, $result, $except, $use]);
 
+        $childStack = static::$callStack;
+
         static::$callStack = [
             'action'    => $action,
             'data'      => $data,
             'result'    => $result,
             'use'       => $use,
-            'sql'       => $sql,
+            'sql'       => static::$sql,
             'exception' => $except,
+            'children'  => $childStack
         ];
 
-        $parentCallStack['children'][] = static::$callStack;
+        $parentCallStack[] = static::$callStack;
         static::$callStack = $parentCallStack;
+
+        static::$sql = $sql;
+
+        // echo "=============", static::$count, "=============\n";
+        static::$count--;
 
         return $result;
     }

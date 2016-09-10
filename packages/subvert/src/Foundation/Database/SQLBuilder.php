@@ -6,7 +6,11 @@ namespace Subvert\Framework\Foundation\Database;
 Class SQLBuilder
 {
 
-    public static function builder($template, array $args = [], $limit = null, $order = null)
+    protected static $expression = [
+        'LIMIT', 'GROUP', 'HAVING', 'ORDER', 'LOCK', 'WHERE'
+    ];
+
+    public static function builder($template, array $args = [], array $expression = [])
     {
         $sql = $template['sql'];
         $require = isset($template['require']) ? $template['require'] : [];
@@ -15,19 +19,24 @@ Class SQLBuilder
         static::checkRequire($require, $args);
         
         $sql = static::buildArgs($sql, $args);
-        $sql = static::buildLimit($sql, $limit);
-        $sql = static::buildOrder($sql, $order);
+        $sql = static::buildExpression($sql, $expression);
 
         return $sql;
     }
 
     protected static function escape($args)
     {
-        foreach ($args as $key => $value) {
-            $args[$key] = mysql_real_escape_string($value);
+        if (is_array($args)) {
+            foreach ($args as $key => $value) {
+                $args[$key] = static::escape($value);
+            }
+
+            return $args;
         }
 
-        return $args;
+        return addslashes($args);
+
+        
     }
 
     protected static function checkRequire($require, $args)
@@ -45,29 +54,30 @@ Class SQLBuilder
     {
         if (count($args)) {
             foreach ($args as $field => $data) {
-                $sql = str_replace('#{'.$field.'}', $data, $sql);
+                $sql = str_replace('#{'.$field.'}', static::escape($data), $sql);
             }
         }
 
         return $sql;
     }
 
-    protected static function buildLimit($sql, $limit)
+    protected static function buildExpression($sql, $expression)
     {
-        if ($limit) {
-            $sql = str_replace('#{LIMIT}#', $limit, $sql);
+        if (count($expression)) {
+            foreach ($expression as $field => $data) {
+                $sql = str_replace('#{'.strtoupper($field).'}#', $data, $sql);
+            }
         }
-
         return $sql;
     }
 
-    protected static function buildOrder($sql, $order)
-    {
-        if ($order) {
-            $sql = str_replace('#{ORDER}#', $order, $sql);
-        }
 
-        return $sql;
+
+    public static function __callStatic($method, $parameters)
+    {
+        $instance = new WhereBuilder();
+
+        return call_user_func_array([$instance, $method], $parameters);
     }
 
 
