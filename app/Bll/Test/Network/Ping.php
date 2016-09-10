@@ -6,7 +6,8 @@ namespace Bll\Test\Network;
 use DB;
 use SQLBuilder;
 use ResponseData;
-use Store\Sql\Bll\Test\Network as NetworkSqlRepo;
+use Store\Sql\Bll\Test\NetworkRepo;
+use Store\Code\Bll\Test\NetworkCode;
 
 class Ping
 {
@@ -14,27 +15,33 @@ class Ping
 
     public function pong()
     {
-        return 'pong';
+        // return ResponseData::set(
+        //     NetworkCode::RESPONSE_SUCCESS, 'pong'
+        //     );
+
+        return ResponseData::success(
+            ['ping' => 'pong']
+        );
     }
 
 
-    public function sql()
+    public function sql(Repository\Interfaces\TestRepositoryInterface $repo, $id)
     {
-        return [
-            DB::select(SQLBuilder::builder(NetworkSqlRepo::TEST_SQL_1, ['id' => 2])),
-            DB::select(SQLBuilder::builder(NetworkSqlRepo::TEST_SQL_2, ['id' => 3], 'limit 0, 1'))
-        ];
+        $data = $repo->sql($id);
+        
+        return ResponseData::success($data);
     }
     
 
     public function entity()
     {
-        return 'entity';
+        return ResponseData::success(['hello' => 'world']);
+        
     }
 
     public function sess($a, $test)
     {
-        return ['method' => 'session'];
+        return ResponseData::success(['method' => 'session']);
     }
 
 }

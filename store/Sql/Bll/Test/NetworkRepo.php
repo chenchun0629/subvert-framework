@@ -3,7 +3,7 @@
 namespace Store\Sql\Bll\Test;
 
 
-class Network
+class NetworkRepo
 {
 
     const TEST_SQL_1 = [

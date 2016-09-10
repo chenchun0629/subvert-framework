@@ -55,6 +55,7 @@ $app->middleware([
         Com\Bootstrap\Middleware\SignValidationMiddleware::class,           # 签名验证
         Com\Bootstrap\Middleware\LoadRoutesMiddleware::class,               # 延迟加载路由
         Com\Bootstrap\Middleware\ProcessDatatMiddleware::class,             # 处理数据
+        Com\Bootstrap\Middleware\RegisterProviderMiddleware::class,         # 注册服务
     ]);
 
 /**

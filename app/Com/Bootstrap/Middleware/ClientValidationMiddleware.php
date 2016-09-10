@@ -17,7 +17,9 @@ class ClientValidationMiddleware implements RequestMiddleware, Validatable
         if (!$this->validate($request->all())) {
             app('log')->error('system.client.validation', [app('request_client')]);
 
-            return ResponseData::set(SystemCode::SYSTEM_CLIENT_ERROR, false);
+            return app()->prepareResponse(
+                ResponseData::set(SystemCode::SYSTEM_CLIENT_ERROR, false)
+            );
         }
         
         return $next($request);

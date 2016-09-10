@@ -20,10 +20,14 @@ class SignValidationMiddleware implements RequestMiddleware, Validatable
             app('log')->error('system.sign.validation', [$valid]);
 
             if (env('APP_DEBUG')) {
-                return ResponseData::set(SystemCode::SYSTEM_SIGN_ERROR, $valid);
+                return app()->prepareResponse(
+                    ResponseData::set(SystemCode::SYSTEM_SIGN_ERROR, $valid)
+                );
             }
 
-            return ResponseData::set(SystemCode::SYSTEM_SIGN_ERROR, false);
+            return app()->prepareResponse(
+                ResponseData::set(SystemCode::SYSTEM_SIGN_ERROR, false)
+            );
         }
         
         return $next($request);

@@ -43,6 +43,14 @@ class ResponseData implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
         }
         return new static((array)$message, $response);
     }
+
+    public static function success($response = [])
+    {
+        if ($response instanceof ResponseData) {
+            return $response;
+        }
+        return new static(FrameworkCode::SYSTEM_SUCCESS, $response);
+    }
     
     public function toArray()
     {

@@ -32,8 +32,10 @@ class ParameterValidationMiddleware implements RequestMiddleware
         if ($validator->fails()) {
 
             app('log')->error('system.parameter.validation', [$validator->errors()]);
-
-            return ResponseData::set(SystemCode::SYSTEM_PARAMETER_ERROR, false);
+            
+            return app()->prepareResponse(
+                ResponseData::set(SystemCode::SYSTEM_PARAMETER_ERROR, false)
+            );
         }
 
         return $next($request);

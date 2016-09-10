@@ -116,7 +116,7 @@ trait RoutesRequests
         }
 
         if (!isset($this->routes[$api])) {
-            throw new MethodNotAllowedHttpException($api . $version);
+            throw new MethodNotAllowedHttpException([], $api . $version);
             
         }
 
@@ -138,7 +138,7 @@ trait RoutesRequests
             }
         }
 
-        throw new MethodNotAllowedHttpException($api . $version);
+        throw new MethodNotAllowedHttpException([], $api . $version);
     }
 
     /**
@@ -182,6 +182,10 @@ trait RoutesRequests
                 }
                 return $this->prepareResponse($response);
             });
+        } catch(MethodNotAllowedHttpException $e) {
+            return $this->prepareResponse(
+                ResponseData::set(FrameworkCode::SYSTEM_NOT_FOUND_ROUTE, false)
+            );
         } catch (Exception $e) {
             return $this->sendExceptionToHandler($e);
         } catch (Throwable $e) {

@@ -8,6 +8,7 @@ use Illuminate\Support\Arr;
 use Store\Code\System\SystemCode;
 use Subvert\Framework\Contract\Validatable;
 use Subvert\Framework\Contract\RequestMiddleware;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class LoadRoutesMiddleware implements RequestMiddleware
 {
@@ -19,7 +20,9 @@ class LoadRoutesMiddleware implements RequestMiddleware
         if (empty($routePath)) {
             app('log')->error('system.route.undefined', [app('request_client')]);
 
-            return ResponseData::set(SystemCode::SYSTEM_UNDEFINED_ROUTE, false);
+            return app()->prepareResponse(
+                ResponseData::set(SystemCode::SYSTEM_UNDEFINED_ROUTE, false)
+            );
         }
 
         $routePath = app()->getConfigurationPath($routePath);
@@ -27,7 +30,9 @@ class LoadRoutesMiddleware implements RequestMiddleware
         if (empty($routePath)) {
             app('log')->error('system.route.nofile', [app('request_client')]);
 
-            return ResponseData::set(SystemCode::SYSTEM_ROUTE_PATH_ERROR, false);
+            return app()->prepareResponse(
+                ResponseData::set(SystemCode::SYSTEM_ROUTE_PATH_ERROR, false)
+            );
         }
         
         $routes = require_once $routePath;
@@ -38,17 +43,17 @@ class LoadRoutesMiddleware implements RequestMiddleware
             app()->addRoute($route);
         }
 
-        $dispatchedRoute = app()->dispatchRoute(
-            Arr::get($request->all(), 'call.api'),
-            Arr::get($request->all(), 'call.version')
-        );
-
-        if (empty($dispatchedRoute)) {
-
+        try {
+            $dispatchedRoute = app()->dispatchRoute(
+                Arr::get($request->all(), 'call.api'),
+                Arr::get($request->all(), 'call.version')
+            );
+        } catch (MethodNotAllowedHttpException $ex) {
             app('log')->error('system.route.notfound', [app('request_client'), $request->all()]);
 
-            return ResponseData::set(SystemCode::SYSTEM_NOT_FOUND_ERROR, false);
-
+            return app()->prepareResponse(
+                ResponseData::set(SystemCode::SYSTEM_NOT_FOUND_ERROR, false)
+            );
         }
 
         return $next($request);
