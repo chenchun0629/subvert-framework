@@ -35,7 +35,7 @@ Class Grammar extends BaseGrammar
         if (count($sql) > 0) {
             $sql = implode(' ', $sql);
 
-            return $this->removeLeadingBoolean($sql);
+            return 'WHERE ' . $this->removeLeadingBoolean($sql);
         }
 
         return '';

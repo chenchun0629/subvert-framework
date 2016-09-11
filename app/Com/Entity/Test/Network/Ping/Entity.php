@@ -14,13 +14,18 @@ class Entity extends SessionProcesser
 
     public function getOutputRegular()
     {
-        return [];
+        return [
+            'w' => [
+                'hello',
+            ]
+        ];
     }
 
     public function output($response)
     {
         $this->session['test'] = 'hello world';
         $response['response'] = app('session')->sessionId();
+        parent::output($response);
         return $response;
     }
 
