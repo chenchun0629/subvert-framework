@@ -19,6 +19,9 @@ class ExceptionHandler extends ExceptionHandler
     
     public function render($request, Exception $e)
     {
+        if (env('APP_DEBUG')) {
+            return new LumenResponse(ResponseData::set(FrameworkCode::SYSTEM_EXCEPTION, (string)$e));
+        }
         return new LumenResponse(ResponseData::set(FrameworkCode::SYSTEM_EXCEPTION));
     }
 }

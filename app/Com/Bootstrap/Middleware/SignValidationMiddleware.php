@@ -13,7 +13,11 @@ class SignValidationMiddleware implements RequestMiddleware, Validatable
 
     public function handle($request, Closure $next)
     {
-
+        
+        if (env('APP_DEBUG') && !env('SIGN_VALID')) {
+            return $next($request);
+        }
+        
         $valid = $this->validate($request->all());
 
         if (!$valid['result']) {
