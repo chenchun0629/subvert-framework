@@ -82,6 +82,13 @@ Class Grammar extends BaseGrammar
         return $this->wrap($where['column']).' '.$where['operator'].' '.$value;
     }
 
+    protected function whereNested($query, $where)
+    {
+        $nested = $where['query'];
+
+        return '('.substr($this->compileWheres($nested), 6).')';
+    }
+
     /**
      * Compile a where clause comparing two columns..
      *

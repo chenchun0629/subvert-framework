@@ -2,6 +2,7 @@
 
 namespace Subvert\Framework\Foundation\Database;
 
+use Closure;
 use InvalidArgumentException;
 use Illuminate\Database\Query\Expression;
 
@@ -18,9 +19,9 @@ Class WhereBuilder
         'not similar to', 'not ilike', '~~*', '!~~*',
     ];
 
-    protected $bindings = [
-        'where'  => [],
-    ];
+    // protected $bindings = [
+    //     'where'  => [],
+    // ];
 
     public function compile()
     {
@@ -36,6 +37,10 @@ Class WhereBuilder
             throw new InvalidArgumentException('Illegal operator and value combination.');
         }
 
+        if ($column instanceof Closure) {
+            return $this->whereNested($column, $boolean);
+        }
+
         if (! in_array(strtolower($operator), $this->operators, true)) {
             list($value, $operator) = [$operator, '='];
         }
@@ -49,7 +54,7 @@ Class WhereBuilder
         $this->wheres[] = compact('type', 'column', 'operator', 'value', 'boolean');
 
         if (! $value instanceof Expression) {
-            $this->addBinding($value, 'where');
+            // $this->addBinding($value, 'where');
         }
 
         return $this;
@@ -66,7 +71,7 @@ Class WhereBuilder
 
         $this->wheres[] = compact('type', 'sql', 'boolean');
 
-        $this->addBinding($bindings, 'where');
+        // $this->addBinding($bindings, 'where');
 
         return $this;
     }
@@ -83,7 +88,7 @@ Class WhereBuilder
 
         $this->wheres[] = compact('column', 'type', 'boolean', 'not', 'values');
 
-        $this->addBinding($values, 'where');
+        // $this->addBinding($values, 'where');
 
         return $this;
     }
@@ -116,7 +121,7 @@ Class WhereBuilder
 
         $this->wheres[] = compact('type', 'column', 'values', 'boolean');
 
-        $this->addBinding($values, 'where');
+        // $this->addBinding($values, 'where');
 
         return $this;
     }
@@ -161,6 +166,44 @@ Class WhereBuilder
     }
 
 
+    public function whereNested(Closure $callback, $boolean = 'and')
+    {
+        $query = $this->newQuery();
+
+        call_user_func($callback, $query);
+
+        return $this->addNestedWhereQuery($query, $boolean);
+    }
+
+    // public function forNestedWhere()
+    // {
+    //     $query = $this->newQuery();
+
+    //     return $query->from($this->from);
+    // }
+
+    
+    public function addNestedWhereQuery($query, $boolean = 'and')
+    {
+        if (count($query->wheres)) {
+            $type = 'Nested';
+
+            $this->wheres[] = compact('type', 'query', 'boolean');
+
+            // $this->addBinding($query->getBindings(), 'where');
+        }
+
+        return $this;
+    }
+
+    protected function newQuery()
+    {
+        return new static();
+    }
+
+
+
+
     protected function invalidOperatorAndValue($operator, $value)
     {
         $isOperator = in_array($operator, $this->operators);
@@ -175,26 +218,27 @@ Class WhereBuilder
 
         $this->wheres[] = compact('type', 'column', 'query', 'boolean');
 
-        $this->addBinding($query->getBindings(), 'where');
+        // $this->addBinding($query->getBindings(), 'where');
 
         return $this;
     }
 
-    public function addBinding($value, $type = 'where')
-    {
-        if (! array_key_exists($type, $this->bindings)) {
-            throw new InvalidArgumentException("Invalid binding type: {$type}.");
-        }
+    // public function addBinding($value, $type = 'where')
+    // {
+    //     if (! array_key_exists($type, $this->bindings)) {
+    //         throw new InvalidArgumentException("Invalid binding type: {$type}.");
+    //     }
 
-        if (is_array($value)) {
-            $this->bindings[$type] = array_values(array_merge($this->bindings[$type], $value));
-        } else {
-            $this->bindings[$type][] = $value;
-        }
+    //     if (is_array($value)) {
+    //         $this->bindings[$type] = array_values(array_merge($this->bindings[$type], $value));
+    //     } else {
+    //         $this->bindings[$type][] = $value;
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
 
 
 }
+
