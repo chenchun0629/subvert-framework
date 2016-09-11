@@ -16,30 +16,27 @@ class Invoker implements Invokable
     static $callStack   = [];
     static $sql         = [];
     static $count       = 0;
+    static $isBindEvent = false;
 
     public static function execute($action, $data)
     {
+
+        static::bindEvent();
+
         static::$count++;
 
+        // echo "=============", static::$count, "=============\n";
+        
         $parentCallStack = static::$callStack;
         static::$callStack = [];
 
-        // echo "=============", static::$count, "=============\n";
+        $sql = static::$sql;
+
         $result = null;
         $except = null;
-        $sql = [];
 
         Event::fire('invoke.before', [$action, $data]);
         $start = microtime(true);
-
-        DB::listen(function($obj) use(&$sql) {
-            $sql[] = [
-                'sql'      => $obj->sql, 
-                'bindings' => $obj->bindings, 
-                'use'      => $obj->time/1000
-            ];
-        });
-
 
         try {
             $data = static::formatData($data);
@@ -120,13 +117,15 @@ class Invoker implements Invokable
             'data'      => $data,
             'result'    => $result,
             'use'       => $use,
-            'sql'       => $sql,
+            'sql'       => static::$sql,
             'exception' => $except,
             'children'  => $childStack
         ];
 
         $parentCallStack[] = static::$callStack;
         static::$callStack = $parentCallStack;
+
+        static::$sql = $sql;
 
         // echo "=============", static::$count, "=============\n";
         static::$count--;
@@ -157,7 +156,27 @@ class Invoker implements Invokable
             return $data;
         }
 
-        return json_decode($data, true);
+        $json = json_decode($data, true);
+
+        if ($json) {
+            return $json;
+        }
+
+        return (array) $data;
+    }
+
+    protected static function bindEvent()
+    {
+        if (!static::$isBindEvent) {
+            DB::listen(function($obj) {
+                static::$sql[] = [
+                    'sql'      => $obj->sql, 
+                    'bindings' => $obj->bindings, 
+                    'use'      => $obj->time/1000
+                ];
+            });
+            static::$isBindEvent = true;
+        }
     }
 
 }
