@@ -182,7 +182,7 @@ class Invoker implements Invokable
                 static::$sql[] = [
                     'sql'      => $obj->sql, 
                     'bindings' => $obj->bindings, 
-                    'use'      => $obj->time/1000
+                    'use'      => number_format(($obj->time/1000), 5),
                 ];
             });
             static::$isBindEvent = true;
