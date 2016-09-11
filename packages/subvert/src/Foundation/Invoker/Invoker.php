@@ -64,17 +64,22 @@ class Invoker implements Invokable
 
             Event::fire('invoke.exception', [$action, $data, $ex]);
 
+            $childStack = static::$callStack;
+
             static::$callStack = [
                 'action'    => $action,
                 'data'      => $data,
                 'result'    => $result,
                 'use'       => $use,
-                'sql'       => $sql,
+                'sql'       => static::$sql,
                 'exception' => $except,
+                'children'  => $childStack
             ];
 
-            $parentCallStack['children'][] = static::$callStack;
+            $parentCallStack[] = static::$callStack;
             static::$callStack = $parentCallStack;
+
+            static::$sql = $sql;
 
             static::$count--;
 
@@ -88,17 +93,22 @@ class Invoker implements Invokable
 
             Event::fire('invoke.exception', [$action, $data, $ex]);
 
+            $childStack = static::$callStack;
+
             static::$callStack = [
                 'action'    => $action,
                 'data'      => $data,
                 'result'    => $result,
                 'use'       => $use,
-                'sql'       => $sql,
+                'sql'       => static::$sql,
                 'exception' => $except,
+                'children'  => $childStack
             ];
 
-            $parentCallStack['children'][] = static::$callStack;
+            $parentCallStack[] = static::$callStack;
             static::$callStack = $parentCallStack;
+
+            static::$sql = $sql;
 
             static::$count--;
 
