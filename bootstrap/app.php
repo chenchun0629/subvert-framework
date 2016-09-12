@@ -50,6 +50,7 @@ $app->singleton('Com\Bootstrap\Validation\SignValidation', function () {
 $app->middleware([
         Com\Bootstrap\Middleware\InitMiddleware::class,                     # 初始化
         Com\Bootstrap\Middleware\LogRequestMiddleware::class,               # 记录请求
+        Com\Bootstrap\Middleware\FilteResponseMiddleware::class,            # 过滤返回
         Com\Bootstrap\Middleware\ParameterValidationMiddleware::class,      # 参数验证
         Com\Bootstrap\Middleware\ClientValidationMiddleware::class,         # 客户端来源你验证
         Com\Bootstrap\Middleware\SignValidationMiddleware::class,           # 签名验证
