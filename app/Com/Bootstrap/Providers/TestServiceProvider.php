@@ -4,7 +4,7 @@ namespace Com\Bootstrap\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-use Bll\Test\Network\Repository as NetworkRepository;
+use Repo\Test;
 
 class TestServiceProvider extends ServiceProvider
 {
@@ -14,8 +14,8 @@ class TestServiceProvider extends ServiceProvider
     {
 
         $this->app->singleton(
-            NetworkRepository\Interfaces\TestRepositoryInterface::class,
-            NetworkRepository\Instances\TestLocalRepository::class
+            Test\Contracts\SqlTestContract::class,
+            Test\Instances\SqlTestLocalRepository::class
         );
 
     }
@@ -24,7 +24,7 @@ class TestServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            NetworkRepository\Interfaces\TestRepositoryInterface::class,
+            Test\Contracts\SqlTestContract::class,
         ];
     }
 

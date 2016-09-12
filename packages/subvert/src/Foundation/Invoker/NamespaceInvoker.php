@@ -11,7 +11,7 @@ class NamespaceInvoker implements Invokable
     {
         list($class, $method) = explode('@', $action);
         $object = app()->make($class);
-        return app()->call([$object, $method], $data);
+        return app()->call([$object, $method], [$data]);
     }
 
 }

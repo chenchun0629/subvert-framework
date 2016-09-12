@@ -13,7 +13,7 @@ class DotInvoker implements Invokable
         $method = array_pop($action);
         $class  = implode('\\', $action);
         $object = app()->make($class);
-        return app()->call([$object, $method], $data);
+        return app()->call([$object, $method], [$data]);
     }
 
 }

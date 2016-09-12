@@ -9,7 +9,7 @@ class CallableInvoker implements Invokable
 
     public static function execute($action, $data)
     {
-        return app()->call($action, $data));
+        return app()->call($action, [$data]));
     }
 
 }

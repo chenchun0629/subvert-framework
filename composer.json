@@ -26,6 +26,7 @@
             "Bll\\"  : "app/Bll/",
             "Com\\"  : "app/Com/",
             "Logic\\": "app/Logic/",
+            "Repo\\" : "app/Repo/",
             "Sass\\" : "app/Sass/",
             "Store\\": "store/"
         }

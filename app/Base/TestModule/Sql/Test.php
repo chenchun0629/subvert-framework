@@ -10,8 +10,10 @@ use Store\Sql\Bll\Test\NetworkRepo;
 class Test
 {
 
-    public function sql($id)
+    public function sql($params)
     {
+
+        $id = $params['id'];
 
         $where = SQLBuilder::where('id', 2)->orWhere('id', 3)->compile();
 

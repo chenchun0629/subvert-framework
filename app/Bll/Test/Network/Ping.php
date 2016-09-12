@@ -8,6 +8,7 @@ use SQLBuilder;
 use ResponseData;
 use Store\Sql\Bll\Test\NetworkRepo;
 use Store\Code\Bll\Test\NetworkCode;
+use Repo\Test as Repository;
 
 class Ping
 {
@@ -25,7 +26,7 @@ class Ping
     }
 
 
-    public function sql(Repository\Interfaces\TestRepositoryInterface $repo, $id)
+    public function sql(Repository\Contracts\SqlTestContract $repo, $params)
     {
         // echo SQLBuilder::where('id', 2)->orWhere('id', 3)->compile(), "\n";
         // echo SQLBuilder::whereBetween('id', [2,4])->orWhereBetween('id', [3,5])->compile(), "\n";
@@ -46,8 +47,8 @@ class Ping
         //     $query->whereIn('id', [1, 2])->whereNotNull('id');
         // })->compile(), "\n";
 
-        $data = $repo->sql($id);
-        $data = $repo->sql($id);
+        $data = $repo->sql($params);
+        $data = $repo->sql($params);
 
         return ResponseData::success($data);
     }

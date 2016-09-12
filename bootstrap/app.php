@@ -48,8 +48,8 @@ $app->singleton('Com\Bootstrap\Validation\SignValidation', function () {
  * set middleware
  */
 $app->middleware([
-        Com\Bootstrap\Middleware\InitMiddleware::class,                     # 生成请求唯一ID
-        Com\Bootstrap\Middleware\LogRequestMiddleware::class,               # 生成请求唯一ID
+        Com\Bootstrap\Middleware\InitMiddleware::class,                     # 初始化
+        Com\Bootstrap\Middleware\LogRequestMiddleware::class,               # 记录请求
         Com\Bootstrap\Middleware\ParameterValidationMiddleware::class,      # 参数验证
         Com\Bootstrap\Middleware\ClientValidationMiddleware::class,         # 客户端来源你验证
         Com\Bootstrap\Middleware\SignValidationMiddleware::class,           # 签名验证
