@@ -1,6 +1,6 @@
 <?php
 
-namespace Com\Entity\Test\Network\Ping;
+namespace Com\Entity\Bll\Test\Network\Ping;
 
 use Com\Foundation\SessionProcesser;
 

@@ -70,8 +70,6 @@ class ProcessDatatMiddleware implements RequestMiddleware
             return ucfirst($str);
         }, $action);
 
-        array_shift($action);
-        
         while (!empty($action)) {
             $class = 'Com\\Entity\\' . implode('\\', $action);
             if (class_exists($class)) {
