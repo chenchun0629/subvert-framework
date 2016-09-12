@@ -6,11 +6,12 @@ namespace Bll\Test\Network;
 use DB;
 use SQLBuilder;
 use ResponseData;
+use Bll\Base;
 use Store\Sql\Bll\Test\NetworkRepo;
 use Store\Code\Bll\Test\NetworkCode;
 use Repo\Test as Repository;
 
-class Ping
+class Ping extends Base
 {
 
 
@@ -28,6 +29,7 @@ class Ping
 
     public function sql(Repository\Contracts\SqlTestContract $repo, $params)
     {
+
         // echo SQLBuilder::where('id', 2)->orWhere('id', 3)->compile(), "\n";
         // echo SQLBuilder::whereBetween('id', [2,4])->orWhereBetween('id', [3,5])->compile(), "\n";
         // echo SQLBuilder::whereNotBetween('id', [2,4])->orwhereNotBetween('id', [3,5])->compile(), "\n";
@@ -63,6 +65,17 @@ class Ping
     public function sess($a, $test)
     {
         return ResponseData::success(['method' => 'session']);
+    }
+
+
+    public function paramerr()
+    {
+        $params = [];
+        $vaild = $this->validate($params, [
+                'id' => 'required|integer'
+            ]);   
+
+        return ResponseData::set(NetworkCode::PARAMETER_ERROR, $vaild['errors']);
     }
 
 }

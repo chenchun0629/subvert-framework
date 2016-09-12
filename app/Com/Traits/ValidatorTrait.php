@@ -6,11 +6,9 @@ use Validator;
 
 trait ValidatorTrait
 {
-    protected $validator;
-
     public function validate(array $data, array $rules, array $messages = [])
     {
-        $validator = Validator::make(data, $rules, $messages);
+        $validator = Validator::make($data, $rules, $messages);
 
         if ($validator->fails()) {
 

@@ -10,4 +10,6 @@ abstract class AbstractCode
 
 
     const RESPONSE_SUCCESS = ['code' => 0, 'message' => 'success', 'flag' => ResponseData::FLAG_SUCCESS];
+
+    const PARAMETER_ERROR = ['code' => 1001, 'message' => 'success', 'flag' => ResponseData::FLAG_NOTICE];
 }

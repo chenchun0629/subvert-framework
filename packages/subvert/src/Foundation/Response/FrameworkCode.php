@@ -18,4 +18,6 @@ class FrameworkCode
     const SYSTEM_BUSY            = ['code' => 2, 'message' => '系统繁忙', 'flag' => ResponseData::FLAG_FAIL];
     const SYSTEM_NOT_FOUND_ROUTE = ['code' => 3, 'message' => '无效接口', 'flag' => ResponseData::FLAG_FAIL];
 
+    const PARAMETER_ERROR        = ['code' => 1001, 'message' => 'success', 'flag' => ResponseData::FLAG_NOTICE];
+
 }
