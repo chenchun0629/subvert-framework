@@ -20,29 +20,26 @@ abstract class SessionProcesser implements SessionProcesserContract
 
     public function input($data)
     {
-        $regulars = $this->getInputRegular();
-
-        if (!empty($regulars['r'])) {
-            $data = $this->readBySession($data, $regulars['r']);
-        }
-
-        if (!empty($regulars['w'])) {
-            $this->writeToSession($data, $regulars['w']);
-        }
-        
-        return $data;
+        return $this->operate($data, $this->getInputRegular());
     }
 
     public function output($data)
     {
-        $regulars = $this->getOutputRegular();
+        return $this->operate($data, $this->getOutputRegular());
+    }
 
+    protected function operate($data, $regulars)
+    {
         if (!empty($regulars['r'])) {
             $data = $this->readBySession($data, $regulars['r']);
         }
 
         if (!empty($regulars['w'])) {
             $this->writeToSession($data, $regulars['w']);
+        }
+
+        if (!empty($regulars['d'])) {
+            $this->deleteSession($data, $regulars['d']);
         }
 
         return $data;
@@ -74,12 +71,26 @@ abstract class SessionProcesser implements SessionProcesserContract
             $this->session->set($regular, $data[$regular]);
         }
     }
+
+    protected function deleteSession($data, $regulars)
+    {
+        foreach ($regulars as $regular) {
+            if ($regular == '*') {
+                $this->session->destory();
+                return;
+            }
+
+            $this->session->delete($regular);
+        }
+
+    }
     
     /**
      * return example
      * [
      *     'r'  => ['key'], // session读取到request
      *     'w'  => ['key'], // request写入到session
+     *     'd'  => ['key'], // 删除session key值。 * 表示全部删除
      * ]
      * @return [type] [description]
      */
@@ -90,6 +101,7 @@ abstract class SessionProcesser implements SessionProcesserContract
      * [
      *     'r'  => ['key'], // session读取到response
      *     'w'  => ['key'], // response写入到session
+     *     'd'  => ['key'], // 删除session key值。 * 表示全部删除
      * ]
      * @return [type] [description]
      */

@@ -56,11 +56,28 @@ class ProcessDatatMiddleware implements RequestMiddleware
     {
         $route = app()->make('dispatched_route');
 
+        $sessionId = Arr::get($request->all(), 'body.token', '');
+        $sessionId = $sessionId ? $sessionId : null;
+
         if (!empty($route['entity'])) {
-            $sessionId = Arr::get($request->all(), 'body.token', '');
-            $sessionId = $sessionId ? $sessionId : null;
             $entity = str_replace('.', '\\', $route['entity']);
             return new $entity(app('session', ['session_id' => $sessionId]));
+        }
+
+        $action = explode('.', $route['action']);
+
+        $action = array_map(function($str) {
+            return ucfirst($str);
+        }, $action);
+
+        array_shift($action);
+        
+        while (!empty($action)) {
+            $class = 'Com\\Entity\\' . implode('\\', $action);
+            if (class_exists($class)) {
+                return new $class(app('session', ['session_id' => $sessionId]));
+            }
+            array_pop($action);
         }
 
         return null;
