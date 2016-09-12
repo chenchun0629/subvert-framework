@@ -1,6 +1,6 @@
 <?php
 
-namespace Com\Entity\Bll\Test;
+namespace Com\Entity\Test;
 
 use Com\Foundation\SessionProcesser;
 

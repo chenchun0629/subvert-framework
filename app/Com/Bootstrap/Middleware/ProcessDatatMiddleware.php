@@ -64,19 +64,19 @@ class ProcessDatatMiddleware implements RequestMiddleware
             return new $entity(app('session', ['session_id' => $sessionId]));
         }
 
-        $action = explode('.', $route['action']);
+        // $action = explode('.', $route['action']);
 
-        $action = array_map(function($str) {
-            return ucfirst($str);
-        }, $action);
+        // $action = array_map(function($str) {
+        //     return ucfirst($str);
+        // }, $action);
 
-        while (!empty($action)) {
-            $class = 'Com\\Entity\\' . implode('\\', $action);
-            if (class_exists($class)) {
-                return new $class(app('session', ['session_id' => $sessionId]));
-            }
-            array_pop($action);
-        }
+        // while (!empty($action)) {
+        //     $class = 'Com\\Entity\\' . implode('\\', $action);
+        //     if (class_exists($class)) {
+        //         return new $class(app('session', ['session_id' => $sessionId]));
+        //     }
+        //     array_pop($action);
+        // }
 
         return null;
     }
