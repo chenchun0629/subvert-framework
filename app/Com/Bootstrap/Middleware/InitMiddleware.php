@@ -14,7 +14,7 @@ class InitMiddleware implements RequestMiddleware
         /**
          * request unique id
          */
-        app()->instance('request_uuid', Uuid::uuid1()->toString());
+        app()->instance('request_uuid', Uuid::uuid4()->toString());
 
         $requestData = $request->all();
 
