@@ -6,8 +6,9 @@ return [
     ['api' => 'test.network.ping.sql', 'action' => 'Bll.Test.Network.Ping.sql'],
     ['action' => 'Bll.Test.Network.Ping.redis'],
     ['action' => 'Bll.Test.Network.Ping.paramerr'],
-    ['action' => 'Bll.Test.Network.Ping.entity', 'entity' => 'Com.Entity.Bll.Test.Network.Ping.Entity'],
-    ['action' => 'Bll.Test.Network.Ping.sess', 'entity' => 'Com.Entity.Bll.Test.Network.Ping.Sess'],
+    ['action' => 'Bll.Test.Network.Ping.entity'],
+    ['action' => 'Bll.Test.Network.Ping.sess'],
+    ['action' => 'Bll.Test.Network.Ping.destory'],
 
 ];
 

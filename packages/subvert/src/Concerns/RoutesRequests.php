@@ -81,31 +81,35 @@ trait RoutesRequests
      */
     public function addRoute($route)
     {
-        list($api, $action, $version, $status, $entity) = $this->parseRoute($route);
+        list($api, $action, $version, $status) = $this->parseRoute($route);
         
         if (!isset($this->routes[$api])) $this->routes[$api] = [];
         $this->routes[$api][$version] = [
             'action' => $action,
             'status' => $status,
-            'entity' => $entity,
         ];
     }
 
     public function parseRoute($route)
     {
-        $api     = $route['api'];
         $action  = $route['action'];
+        $api     = isset($route['api']) ? $route['api'] : $this->actionToApi($action);
         $version = isset($route['version']) ? $route['version'] : '*'; 
         $status  = isset($route['status']) ? $route['status'] : 'enable';
-        $entity  = isset($route['entity']) ? $route['entity'] : '';
 
         return [
             $api,
             $action,
             $version,
             $status,
-            $entity,
         ];
+    }
+
+    protected function actionToApi($action)
+    {
+        $action = explode('.', $action);
+        array_shift($action);
+        return strtolower(implode('.', $action));
     }
 
     public function dispatchRoute($api, $version)

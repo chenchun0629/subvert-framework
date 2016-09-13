@@ -7,6 +7,7 @@ use Exception;
 use ResponseData;
 use Illuminate\Support\Arr;
 use Store\Code\System\SystemCode;
+use Com\Foundation\SessionProcesser;
 use Subvert\Framework\Contract\RequestMiddleware;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -56,29 +57,41 @@ class ProcessDatatMiddleware implements RequestMiddleware
     {
         $route = app()->make('dispatched_route');
 
-        $sessionId = Arr::get($request->all(), 'body.token', '');
-        $sessionId = $sessionId ? $sessionId : null;
+        $servletConfig = $this->getServLetConfig($route['action']);
 
-        if (!empty($route['entity'])) {
-            $entity = str_replace('.', '\\', $route['entity']);
-            return new $entity(app('session', ['session_id' => $sessionId]));
+        if (empty($servletConfig)) {
+            return null;
         }
 
-        // $action = explode('.', $route['action']);
+        $sessionId = app('request_token') ?: null;
 
-        // $action = array_map(function($str) {
-        //     return ucfirst($str);
-        // }, $action);
+        return new SessionProcesser(app('session', ['session_id' => $sessionId]), $servletConfig);
+    }
 
-        // while (!empty($action)) {
-        //     $class = 'Com\\Entity\\' . implode('\\', $action);
-        //     if (class_exists($class)) {
-        //         return new $class(app('session', ['session_id' => $sessionId]));
-        //     }
-        //     array_pop($action);
-        // }
+    protected function getServLetConfig($action)
+    {
+        
+        $key = 'servlet/' . app('request_client');
+        app()->configure($key);
+        $config = config($key);
 
-        return null;
+        if (isset($config[$action])) {
+            return $config[$action];
+        }
+
+        $action = explode('.', $action);
+        do {
+            $configKey = implode('.', $action) . '.*';
+
+            if (isset($config[$configKey])) {
+                return $config[$configKey];
+            }
+
+            array_pop($action);
+
+        } while (!empty($action));
+
+        return [];
     }
 
     protected function callDataToJson($requestData)

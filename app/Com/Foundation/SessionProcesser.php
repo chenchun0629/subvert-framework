@@ -8,28 +8,31 @@ use Store\Code\System\SystemCode;
 use Subvert\Framework\Contract\Sessionable;
 use Subvert\Framework\Contract\SessionProcesser as SessionProcesserContract;
 
-abstract class SessionProcesser implements SessionProcesserContract
+class SessionProcesser implements SessionProcesserContract
 {
 
     protected $session;
+    protected $regulars;
 
-    public function __construct(Sessionable $session)
+    public function __construct(Sessionable $session, array $regulars)
     {
-        $this->session = $session;
+        $this->session  = $session;
+        $this->regulars = $regulars;
     }
 
     public function input($data)
     {
-        return $this->operate($data, $this->getInputRegular());
+        return $this->operate($data, $this->regulars['session']['in']);
     }
 
     public function output($data)
     {
-        return $this->operate($data, $this->getOutputRegular());
+        return $this->operate($data, $this->regulars['session']['out']);
     }
 
     protected function operate($data, $regulars)
     {
+
         if (!empty($regulars['r'])) {
             $data = $this->readBySession($data, $regulars['r']);
         }
@@ -84,27 +87,5 @@ abstract class SessionProcesser implements SessionProcesserContract
         }
 
     }
-    
-    /**
-     * return example
-     * [
-     *     'r'  => ['key'], // session读取到request
-     *     'w'  => ['key'], // request写入到session
-     *     'd'  => ['key'], // 删除session key值。 * 表示全部删除
-     * ]
-     * @return [type] [description]
-     */
-    abstract public function getInputRegular();
-
-    /**
-     * return example
-     * [
-     *     'r'  => ['key'], // session读取到response
-     *     'w'  => ['key'], // response写入到session
-     *     'd'  => ['key'], // 删除session key值。 * 表示全部删除
-     * ]
-     * @return [type] [description]
-     */
-    abstract public function getOutputRegular();
 
 }

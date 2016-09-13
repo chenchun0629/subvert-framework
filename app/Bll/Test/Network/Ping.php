@@ -62,7 +62,7 @@ class Ping extends Base
         
     }
 
-    public function sess($a, $test)
+    public function sess()
     {
         return ResponseData::success(['method' => 'session']);
     }
@@ -76,6 +76,11 @@ class Ping extends Base
             ]);   
 
         return ResponseData::set(NetworkCode::PARAMETER_ERROR, $vaild['errors']);
+    }
+
+    public function destory()
+    {
+        return ResponseData::success(['method' => 'destory']);
     }
 
 }
