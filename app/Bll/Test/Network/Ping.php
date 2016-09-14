@@ -67,6 +67,15 @@ class Ping extends Base
         return ResponseData::success(['method' => 'session']);
     }
 
+    public function login()
+    {
+        return ResponseData::success(
+                [
+                    'user' => ['id' => 1],
+                ]
+            );
+    }
+
 
     public function paramerr()
     {

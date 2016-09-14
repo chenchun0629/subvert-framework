@@ -33,6 +33,11 @@ class Session implements Sessionable, ArrayAccess
         return new static($sessionId);
     }
 
+    public static function existsSessionId($sessionId)
+    {
+        return app('redis')->exists('session:' . app()->appName() . ':' . $sessionId);
+    }
+
     public function sessionId()
     {
         return empty($this->sessionId) ? $this->buildSessionId() : $this->sessionId;
@@ -49,12 +54,12 @@ class Session implements Sessionable, ArrayAccess
 
     public function get($key) 
     {
-        return $this->redis->hget($this->redisKey, $key);
+        return unserialize($this->redis->hget($this->redisKey, $key));
     }
     
     public function set($key, $value)
     {
-        $result = $this->redis->hset($this->redisKey, $key, $value);
+        $result = $this->redis->hset($this->redisKey, $key, serialize($value));
 
         $this->redis->expire($this->redisKey, config('session.lifetime'));
 
@@ -63,7 +68,11 @@ class Session implements Sessionable, ArrayAccess
 
     public function all()
     {
-        return $this->redis->hgetall($this->redisKey);
+        $data = $this->redis->hgetall($this->redisKey);
+        foreach ($data as $key => $value) {
+            $data[$key] = unserialize($value);
+        }
+        return $data;
     }
 
     public function delete($key)

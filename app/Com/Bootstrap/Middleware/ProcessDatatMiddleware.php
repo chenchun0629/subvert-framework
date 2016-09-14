@@ -16,6 +16,7 @@ class ProcessDatatMiddleware implements RequestMiddleware
 
     public function handle($request, Closure $next)
     {
+
         $requestData = $request->request->all();
 
         $requestData = $this->callDataToJson($requestData);
@@ -41,11 +42,13 @@ class ProcessDatatMiddleware implements RequestMiddleware
         if ($entity && $responseData['code'] === 0) {
             try {
                 $responseData['response'] = $entity->output($responseData['response']);
+                $responseData['token']    = $entity->token();
             } catch(\Exception $ex) {
                 app('log')->error('system.data.process', [$ex]);
 
                 return app()->prepareResponse($ex->getMessage());
             }
+
             $response->setContent($responseData);
         }
 

@@ -21,12 +21,15 @@ class InitMiddleware implements RequestMiddleware
         /**
          * 请求来源
          */
-        app()->instance('request_client', $requestData['body']['client']);
+        $requestClient = isset($requestData['body']) && isset($requestData['body']['client']) ?  $requestData['body']['client'] : '';
+        app()->instance('request_client', $requestClient);
+
 
         /**
          * 请求session_id
          */
-        app()->instance('request_token', $requestData['body']['token']);
+        $requestToken = isset($requestData['body']) && isset($requestData['body']['token']) ?  $requestData['body']['token'] : '';
+        app()->instance('request_token', $requestToken);
 
         /**
          * 请求时间

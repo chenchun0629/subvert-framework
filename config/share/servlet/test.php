@@ -83,6 +83,25 @@ return [
         ]
     ],
 
+    'Bll.Test.Network.Ping.login' => [
+        'session' => [
+            'in' => [
+                'r' => [],
+                'w' => [],
+                'd' => [],
+            ],
+            'out' => [
+                'r' => [],
+                'w' => ['user'],
+                'd' => [],
+            ]
+        ],
+        'token' => true,
+        'cache' => [
+            /*.....*/
+        ]
+    ],
+
     'Bll.Test.Network.Ping.destory' => [
         'session' => [
             'in' => [

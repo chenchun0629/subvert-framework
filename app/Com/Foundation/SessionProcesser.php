@@ -22,12 +22,23 @@ class SessionProcesser implements SessionProcesserContract
 
     public function input($data)
     {
-        return $this->operate($data, $this->regulars['session']['in']);
+        $regulars = empty($this->regulars['session']) || empty($this->regulars['session']['in']) ? [] : $this->regulars['session']['in'];
+        return $this->operate($data, $regulars);
     }
 
     public function output($data)
     {
-        return $this->operate($data, $this->regulars['session']['out']);
+        $regulars = empty($this->regulars['session']) || empty($this->regulars['session']['out']) ? [] : $this->regulars['session']['out'];
+        return $this->operate($data, $regulars);
+    }
+
+    public function token()
+    {
+        if (isset($this->regulars['token']) && $this->regulars['token']) {
+            return $this->session->sessionId();
+        }
+
+        return '';
     }
 
     protected function operate($data, $regulars)

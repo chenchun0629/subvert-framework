@@ -28,6 +28,8 @@ class ResponseData implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
 
     protected $flag;
 
+    protected $token = '';
+
     public function __construct(array $message, $response = [])
     {
         $this->code     = $message['code'];
@@ -54,12 +56,18 @@ class ResponseData implements ArrayAccess, Arrayable, Jsonable, JsonSerializable
     
     public function toArray()
     {
-        return [
+        $data = [
             'code'     => $this->code,
             'message'  => $this->message,
             'response' => $this->response,
             'flag'     => $this->flag,
         ];
+
+        if (!empty($this->token)) {
+            $data['token'] = $this->token;
+        }
+
+        return $data;
     }
     
     public function __toString()
