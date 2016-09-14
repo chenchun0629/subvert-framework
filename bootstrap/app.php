@@ -29,6 +29,7 @@ $app->withFacades();
  */
 $app->configure('database');
 $app->configure('session');
+$app->configure('cross_origin');
 
 /**
  * bind object
@@ -43,13 +44,13 @@ $app->singleton('Com\Bootstrap\Validation\SignValidation', function () {
     return app()->make($class);
 });
 
-
 /**
  * set middleware
  */
 $app->middleware([
         Com\Bootstrap\Middleware\InitMiddleware::class,                     # 初始化
         Com\Bootstrap\Middleware\LogRequestMiddleware::class,               # 记录请求
+        Com\Bootstrap\Middleware\CrossOriginMiddleware::class,              # 跨域处理
         Com\Bootstrap\Middleware\ParameterValidationMiddleware::class,      # 参数验证
         Com\Bootstrap\Middleware\FilteResponseMiddleware::class,            # 过滤返回
         Com\Bootstrap\Middleware\ClientValidationMiddleware::class,         # 客户端来源你验证
