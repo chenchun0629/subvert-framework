@@ -21,6 +21,7 @@ class Session implements Sessionable, ArrayAccess
         $this->sessionId = $sessionId;
         $this->redis = app('redis');
         $this->redisKey = $this->buildRedisKey($this->sessionId);
+        $this->set('SUBVERT_SESSION_ID', $this->sessionId);
     }
 
     protected function buildRedisKey($sessionId)

@@ -23,13 +23,18 @@ class SessionProcesser implements SessionProcesserContract
     public function input($data)
     {
         $regulars = empty($this->regulars['session']) || empty($this->regulars['session']['in']) ? [] : $this->regulars['session']['in'];
-        return $this->operate($data, $regulars);
+        $r = isset($regulars['r']) ? $regulars['r'] : [];
+        return $this->operate($data, $r);
     }
 
     public function output($data)
     {
         $regulars = empty($this->regulars['session']) || empty($this->regulars['session']['out']) ? [] : $this->regulars['session']['out'];
-        return $this->operate($data, $regulars);
+        $r = isset($regulars['r']) ? $regulars['r'] : [];
+        $d = isset($regulars['d']) ? $regulars['d'] : [];
+        $w = isset($regulars['w']) ? $regulars['w'] : [];
+        $s = isset($regulars['s']) ? $regulars['s'] : [];
+        return $this->operate($data, $r, $w, $d, $s);
     }
 
     public function token()
@@ -41,19 +46,47 @@ class SessionProcesser implements SessionProcesserContract
         return '';
     }
 
-    protected function operate($data, $regulars)
+    protected function operate($data, $r = [], $w = [], $d = [], $s = [])
     {
 
-        if (!empty($regulars['r'])) {
-            $data = $this->readBySession($data, $regulars['r']);
+        if (!empty($r)) {
+            $data = $this->readBySession($data, $r);
         }
 
-        if (!empty($regulars['w'])) {
-            $this->writeToSession($data, $regulars['w']);
+        if (!empty($w)) {
+            $this->writeToSession($data, $w);
         }
 
-        if (!empty($regulars['d'])) {
-            $this->deleteSession($data, $regulars['d']);
+        if (!empty($d)) {
+            $this->deleteSession($data, $d);
+        }
+
+        if (!empty($s)) {
+            $data = $this->saveSession($data, $s);
+        }
+
+        return $data;
+    }
+
+    protected function saveSession($data, $regulars)
+    {
+
+        foreach ($regulars as $regular) {
+            
+            if ($regular == '*') {
+                foreach ($data as $k => $v) {
+                    $this->session->set($k, $v);
+                }
+                return [];
+            }
+
+            if (!isset($data[$regular])) {
+                throw new Exception(ResponseData::set(SystemCode::SYSTEM_SAVE_SESSION_ERROR,false));
+            }
+
+            $this->session->set($regular, $data[$regular]);
+
+            unset($data[$regular]);
         }
 
         return $data;

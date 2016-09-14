@@ -23,6 +23,7 @@ class SystemCode extends AbstractCode
     const SYSTEM_READ_SESSION_ERROR  = ['code' => 1007, 'message' => '会话异常', 'flag' => ResponseData::FLAG_FAIL];
     const SYSTEM_WRITE_SESSION_ERROR = ['code' => 1008, 'message' => '会话异常', 'flag' => ResponseData::FLAG_FAIL];
     const SYSTEM_TOKEN_ERROR         = ['code' => 1009, 'message' => '未登录', 'flag' => ResponseData::FLAG_NOTICE];
+    const SYSTEM_SAVE_SESSION_ERROR  = ['code' => 1010, 'message' => '会话异常', 'flag' => ResponseData::FLAG_NOTICE];
 
 
 
